@@ -26,7 +26,7 @@ pipeline{
                     withCredentials([string(credentialsId: 'DOKCER_HUB_PASSWORD', variable: 'DOKCER_HUB_PASSWORD')]) {
                              sh '''
                                 docker build -t vasanth24/springapp:${VERSION} .
-                                docker login -u admin -p ${DOKCER_HUB_PASSWORD}
+                                docker login -u vasanth24 -p ${DOKCER_HUB_PASSWORD}
                                 docker push  vasanth24/springapp:${VERSION}
                                 docker rmi vasanth24/springapp:${VERSION}
                             '''
