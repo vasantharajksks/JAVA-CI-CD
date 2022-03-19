@@ -54,7 +54,7 @@ pipeline{
                              sh '''
                                  helmversion=$( helm show chart myapp | grep version | cut -d: -f 2 | tr -d ' ')
                                  tar -czvf  myapp-${helmversion}.tgz myapp/
-				 curl -u admin:$DOKCER_HUB_PASSWORD http://3.111.30.115:8081/nexus/content/repositories/001/ --remove-file myapp-${helmversion}.tgz -v
+				 curl  -X "DELETE" -u admin:$DOKCER_HUB_PASSWORD http://3.111.30.115:8081/nexus/content/repositories/001/  myapp-${helmversion}.tgz -v
                                  curl -u admin:$DOKCER_HUB_PASSWORD http://3.111.30.115:8081/nexus/content/repositories/001/ --upload-file myapp-${helmversion}.tgz -v
                             '''
                           }
