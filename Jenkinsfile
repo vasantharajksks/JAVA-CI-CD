@@ -54,7 +54,7 @@ pipeline{
                              sh '''
                                  helmversion=$( helm show chart myapp | grep version | cut -d: -f 2 | tr -d ' ')
                                  tar -czvf  myapp-${helmversion}.tgz myapp/
-                                 curl -u admin:$DOKCER_HUB_PASSWORD http://3.111.30.115:8081/repository/helm-repo/ --upload-file myapp-${helmversion}.tgz -v
+                                 curl -u admin:$DOKCER_HUB_PASSWORD http://3.111.30.115:8081/nexus/content/repositories/001/ --upload-file myapp-${helmversion}.tgz -v
                             '''
                           }
                     }
@@ -72,6 +72,7 @@ pipeline{
          //   }
         //}
         stage('Deploying application on k8s cluster') {
+            agent {label 'k8s'}
             steps {
                script{
                    withCredentials([kubeconfigFile(credentialsId: 'k8s-credentials', variable: 'KUBECONFIG_CONTENT')]) {
@@ -83,9 +84,10 @@ pipeline{
             }
         }
         stage('verifying app deployment'){
+            agent {label 'k8s' }
             steps{
                 script{
-                     withCredentials([kubeconfigFile(credentialsId: 'k8s-credentials', variable: 'KUBECONFIG_CONTENT')]) {
+                     withCredentials([kubeconfigFile(credentialsId: 'k8s-credentials', variable: 'KUBECONFIG')]) {
                          sh 'kubectl run curl --image=curlimages/curl -i --rm --restart=Never -- curl myjavaapp-myapp:8080'
 
                      }
